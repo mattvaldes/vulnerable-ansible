@@ -1,0 +1,65 @@
+---
+- hosts: all
+  tasks:
+
+  - name: Uninstall Nginx
+    apt: pkg=nginx purge=yes state=absent 
+
+  - name: Uninstall Nginx
+    apt: pkg=nginx-full purge=yes state=absent 
+  
+  - name: Uninstall Nginx
+    apt: pkg=nginx-common purge=yes state=absent 
+  
+  - name: Uninstall Nginx-Extras
+    apt: pkg=nginx-extras state=absent
+  
+  - name: Install Nginx
+    apt: pkg=nginx-full state=installed update_cache=true
+    notify:
+     - Start Nginx
+
+  - name: ensure nginx is running
+    service:
+      name: nginx
+      state: started
+
+  - name: uninstall redis
+    apt: pkg=redis-server purge=yes state=absent
+
+  - name: install redis
+    apt: pkg=redis-server state=installed update_cache=true
+    notify:
+     - Start redis
+
+  - name: ensure redis is running
+    service: name=redis-server state=started
+
+  - name: uninstall vsftpd
+    apt: pkg=vsftpd purge=yes state=absent
+
+  - name: delete anonymous ftp directory
+    file: path=/srv/ftp/upload state=absent
+
+  - name: install vsftpd
+    apt: pkg=vsftpd state=installed update_cache=true
+
+  - name: write vsftpd configuration file
+    template:
+      src: /etc/ansible/roles/templates/vsftpd-good.conf
+      dest: /etc/vsftpd.conf
+    notify:
+     - Start vsftpd
+
+  - name: ensure vsftpd is running
+    service: name=vsftpd state=started
+
+  handlers:
+    - name: Start Nginx
+      service: name=nginx state=restarted
+
+    - name: Start redis
+      service: name=redis-server state=restarted
+  
+    - name: Start vsftpd
+      service: name=vsftpd state=restarted

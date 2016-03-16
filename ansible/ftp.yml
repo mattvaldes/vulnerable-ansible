@@ -1,0 +1,59 @@
+---
+- hosts: all
+  tasks:
+  - name: Install Nginx
+    apt: pkg=nginx-common state=installed update_cache=true
+
+  - name: Install Nginx-Extras
+    apt: pkg=nginx-extras state=installed update_cache=true
+  
+  - name: write nginx config file
+    template:
+      src: /etc/ansible/roles/templates/default
+      dest: /etc/nginx/sites-enabled/default
+    notify:
+     - Start Nginx
+
+  - name: ensure nginx is running
+    service:
+      name: nginx
+      state: started
+
+  - name: install redis
+    apt: pkg=nginx-common state=installed update_cache=true
+
+  - name: write redis configuration file
+    template:
+      src: /etc/ansible/roles/templates/redis.conf
+      dest: /etc/redis/redis.conf
+    notify:
+     - Start redis
+
+  - name: ensure redis is running
+    service: name=redis-server state=started
+
+  - name: install vsftpd
+    apt: pkg=vsftpd state=installed update_cache=true
+
+  - name: create anonymous ftp directory
+    file: path=/srv/ftp/upload state=directory mode="a+rwx"
+
+  - name: write vsftpd configuration file
+    template:
+      src: /etc/ansible/roles/templates/vsftpd.conf
+      dest: /etc/vsftpd.conf
+    notify:
+     - Start vsftpd
+
+  - name: ensure vsftpd is running
+    service: name=vsftpd state=started
+
+  handlers:
+    - name: Start Nginx
+      service: name=nginx state=restarted
+
+    - name: Start redis
+      service: name=redis-server state=restarted
+  
+    - name: Start vsftpd
+      service: name=vsftpd state=restarted

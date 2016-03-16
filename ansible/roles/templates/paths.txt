@@ -1,0 +1,3 @@
+/etc/nginx/sites-enabled/default
+/etc/redis/redis.conf
+/etc/vsftpd.conf
