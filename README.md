@@ -36,3 +36,8 @@ tcp        0      0 192.168.1.104:22       10.0.0.X:53549    ESTABLISHED 13260/0
 tcp6       0      0 :::22                   :::*                    LISTEN      2600/sshd      
 ```
 7. Re-run vulnerability scan.
+```
+* Anonymous FTP is disabled.
+* nginx webserver is displaying a current version in the banner
+* Redis server is no longer publicly available.
+```
